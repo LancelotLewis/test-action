@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+
+    if: "! contains(toJSON(github.event.commits.*.message), '[skip ci]')"
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Init
+        run: make github-init
+
+      - name: Install dependencies
+        uses: bahmutov/npm-install@v1
+
+      - name: Bundle
+        run: yarn bundle
+
+      - name: Upload
+        uses: LancelotLewis/learn-github-action@v0.3
+        with:
+          endpoint: https://test.registry.arcblock.io/
+          access-token: z5xnVBq7it1Cf9bQA9QDxBaqgf9MCG8SWGCZSd673ToGt31gL9ne6xW9T666FRuRtdsFgktFn8rePQE78Pmia4Pzc
+
+      # - name: Release to Github
+      #   uses: blocklet/action-release-to-github@v1.0.0
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
